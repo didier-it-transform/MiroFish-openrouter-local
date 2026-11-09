@@ -12,7 +12,6 @@ from dataclasses import dataclass
 
 from zep_cloud import BatchAddItem, EntityEdgeSourceTarget, NotFoundError
 
-from ..config import Config
 from ..models.task import TaskManager, TaskStatus
 from ..utils.zep_paging import fetch_all_nodes, fetch_all_edges
 from ..utils.ontology import (

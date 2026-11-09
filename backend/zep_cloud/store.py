@@ -8,7 +8,7 @@ import sqlite3
 import threading
 import uuid
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 DEFAULT_STORE_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), "..", "uploads", "zep_local", "graph.db"

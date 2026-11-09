@@ -7,18 +7,16 @@ import os
 import sys
 import json
 import time
-import asyncio
 import threading
 import subprocess
 import signal
 import atexit
-from typing import Dict, Any, List, Optional, Union
+from typing import Dict, Any, List, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from queue import Queue
 
-from ..config import Config
 from ..utils.logger import get_logger
 from ..utils.locale import get_locale, set_locale
 from ..utils.zep import (
@@ -26,7 +24,7 @@ from ..utils.zep import (
     ZEP_INGESTION_WAIT_TIMEOUT_SECONDS,
 )
 from .zep_graph_memory_updater import ZepGraphMemoryManager
-from .simulation_ipc import SimulationIPCClient, CommandType, IPCResponse
+from .simulation_ipc import SimulationIPCClient
 
 logger = get_logger('mirofish.simulation_runner')
 
@@ -1382,7 +1380,6 @@ class SimulationRunner:
         Returns:
             清理结果信息
         """
-        import shutil
         
         sim_dir = os.path.join(cls.RUN_STATE_DIR, simulation_id)
         

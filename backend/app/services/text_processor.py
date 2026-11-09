@@ -2,7 +2,7 @@
 文本处理服务
 """
 
-from typing import List, Optional
+from typing import List
 from ..utils.file_parser import FileParser, split_text_into_chunks
 
 

@@ -7,7 +7,6 @@ from typing import Dict, Any, List, Optional, Set, Callable, TypeVar
 from dataclasses import dataclass, field
 from zep_cloud import NotFoundError
 
-from ..config import Config
 from ..utils.logger import get_logger
 from ..utils.zep_paging import fetch_all_nodes, fetch_all_edges
 from ..utils.zep import call_zep_read_with_retry, get_zep_client

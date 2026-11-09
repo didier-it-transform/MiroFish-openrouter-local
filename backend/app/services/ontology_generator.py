@@ -3,7 +3,6 @@
 接口1：分析文本内容，生成适合社会模拟的实体和关系类型定义
 """
 
-import json
 import logging
 import re
 from typing import Dict, Any, List, Optional

@@ -10,7 +10,6 @@ OASIS Agent Profile生成器
 
 import json
 import random
-import time
 from typing import Dict, Any, List, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -26,7 +25,7 @@ from ..utils.zep import (
     is_retryable_zep_error,
     normalize_zep_search_query,
 )
-from .zep_entity_reader import EntityNode, ZepEntityReader
+from .zep_entity_reader import EntityNode
 
 logger = get_logger('mirofish.oasis_profile')
 
@@ -626,7 +625,6 @@ class OasisProfileGenerator:
     
     def _fix_truncated_json(self, content: str) -> str:
         """修复被截断的JSON（输出被max_tokens限制截断）"""
-        import re
         
         # 如果JSON被截断，尝试闭合它
         content = content.strip()

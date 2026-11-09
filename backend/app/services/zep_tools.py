@@ -8,13 +8,11 @@ Zep检索工具服务
 3. QuickSearch（简单搜索）- 快速检索
 """
 
-import time
 import json
 from typing import Dict, Any, List, Optional
 from dataclasses import dataclass, field
 from zep_cloud import NotFoundError
 
-from ..config import Config
 from ..utils.logger import get_logger
 from ..utils.llm_client import LLMClient
 from ..utils.locale import get_locale, t

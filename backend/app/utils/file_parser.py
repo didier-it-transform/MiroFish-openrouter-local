@@ -3,9 +3,8 @@
 支持PDF、Markdown、TXT文件的文本提取
 """
 
-import os
 from pathlib import Path
-from typing import List, Optional
+from typing import List
 
 
 def _read_text_with_fallback(file_path: str) -> str:

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 import time
 from functools import lru_cache
 from typing import Any, Callable, TypeVar
@@ -10,7 +9,6 @@ from typing import Any, Callable, TypeVar
 from zep_cloud.client import Zep
 from zep_cloud.core.api_error import ApiError as ZepApiError
 
-from ..config import Config
 from .logger import get_logger
 
 logger = get_logger("mirofish.zep")

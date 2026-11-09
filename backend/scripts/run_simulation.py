@@ -75,7 +75,7 @@ class LLMClient:
 
         api_key = os.environ.get("LLM_API_KEY", "").strip()
         if not api_key:
-            raise ValueError("缺少 API Key 配置，请在项目根目录 .env 文件中设置 LLM_API_KEY")
+            raise ValueError("Missing API key: set LLM_API_KEY in the .env file at the project root")
         self.model = os.environ.get("LLM_MODEL_NAME", "openai/gpt-4o-mini")
         self._client = OpenAI(
             api_key=api_key,
@@ -605,11 +605,11 @@ class IPCHandler:
             return True
 
         if command_type == "close_env":
-            self.send_response(command_id, "completed", result={"message": "环境即将关闭"})
+            self.send_response(command_id, "completed", result={"message": "The environment is about to close"})
             shutdown_event.set()
             return False
 
-        self.send_response(command_id, "failed", error=f"未知命令类型: {command_type}")
+        self.send_response(command_id, "failed", error=f"Unknown command type: {command_type}")
         return True
 
 
@@ -634,14 +634,14 @@ class SimulationRunner:
 
     async def run(self, max_rounds: Optional[int] = None) -> None:
         print("=" * 60)
-        print("内置多智能体社会模拟 (OpenRouter LLM)")
-        print(f"配置文件: {self.config_path}")
-        print(f"模拟ID: {self.config.get('simulation_id', 'unknown')}")
+        print("Built-in multi-agent social simulation (OpenRouter LLM)")
+        print(f"Config file: {self.config_path}")
+        print(f"Simulation ID: {self.config.get('simulation_id', 'unknown')}")
         print("=" * 60)
 
         platforms = self._detect_platforms()
         if not platforms:
-            print("错误: 未找到 twitter_profiles.csv 或 reddit_profiles.json")
+            print("Error: twitter_profiles.csv or reddit_profiles.json not found")
             return
 
         time_config = self.config.get("time_config", {})
@@ -651,8 +651,8 @@ class SimulationRunner:
         if max_rounds is not None and max_rounds > 0:
             total_rounds = min(total_rounds, max_rounds)
 
-        print(f"平台: {platforms}")
-        print(f"总轮数: {total_rounds}")
+        print(f"Platforms: {platforms}")
+        print(f"Total rounds: {total_rounds}")
 
         llm = LLMClient()
         log_manager = SimulationLogManager(self.simulation_dir)
@@ -660,12 +660,12 @@ class SimulationRunner:
         for platform in platforms:
             simulator = PlatformSimulator(platform, self.config, self.simulation_dir, llm, log_manager)
             if not simulator.load_profiles():
-                print(f"警告: {platform} profile 加载失败，跳过该平台")
+                print(f"Warning: failed to load {platform} profiles, skipping platform")
                 continue
             simulators[platform] = simulator
 
         if not simulators:
-            print("错误: 没有可用的模拟平台")
+            print("Error: no usable simulation platform")
             return
 
         ipc = IPCHandler(self.simulation_dir, simulators)
@@ -674,16 +674,16 @@ class SimulationRunner:
         for platform, simulator in simulators.items():
             published = simulator.publish_initial_posts()
             if published:
-                print(f"  [{platform}] 已发布 {published} 条初始帖子")
+                print(f"  [{platform}] published {published} initial posts")
 
-        print("\n开始模拟循环...")
+        print("\nStarting simulation loop...")
         start_time = datetime.now()
         await asyncio.gather(*(simulator.run(total_rounds) for simulator in simulators.values()))
         elapsed = (datetime.now() - start_time).total_seconds()
-        print(f"\n模拟循环完成! 总耗时: {elapsed:.1f}秒")
+        print(f"\nSimulation loop complete! Elapsed: {elapsed:.1f}s")
 
         if self.wait_for_commands:
-            print("\n进入等待命令模式 - 环境保持运行")
+            print("\nEntering wait-for-commands mode - environment stays alive")
             shutdown_event = asyncio.Event()
             ipc.update_status("alive")
             try:
@@ -695,12 +695,12 @@ class SimulationRunner:
                     except asyncio.TimeoutError:
                         pass
             except KeyboardInterrupt:
-                print("\n收到中断信号")
+                print("\nInterrupt received")
 
         ipc.update_status("stopped")
         for simulator in simulators.values():
             simulator.db.close()
-        print("环境已关闭")
+        print("Environment closed")
         print("=" * 60)
 
 
@@ -710,7 +710,7 @@ _shutdown_event: Optional[asyncio.Event] = None
 def setup_signal_handlers():
     def signal_handler(signum, frame):
         sig_name = "SIGTERM" if signum == signal.SIGTERM else "SIGINT"
-        print(f"\n收到 {sig_name} 信号，正在退出...")
+        print(f"\nReceived {sig_name}, exiting...")
         if _shutdown_event is not None:
             _shutdown_event.set()
     signal.signal(signal.SIGTERM, signal_handler)
@@ -719,15 +719,15 @@ def setup_signal_handlers():
 
 async def main():
     global _shutdown_event
-    parser = argparse.ArgumentParser(description="内置多智能体社会模拟 (OpenRouter LLM)")
-    parser.add_argument("--config", type=str, required=True, help="配置文件路径 (simulation_config.json)")
-    parser.add_argument("--max-rounds", type=int, default=None, help="最大模拟轮数（可选）")
-    parser.add_argument("--no-wait", action="store_true", default=False, help="模拟完成后立即关闭环境")
+    parser = argparse.ArgumentParser(description="Built-in multi-agent social simulation (OpenRouter LLM)")
+    parser.add_argument("--config", type=str, required=True, help="Config file path (simulation_config.json)")
+    parser.add_argument("--max-rounds", type=int, default=None, help="Maximum simulation rounds (optional)")
+    parser.add_argument("--no-wait", action="store_true", default=False, help="Close the environment immediately after simulation")
     args = parser.parse_args()
 
     _shutdown_event = asyncio.Event()
     if not os.path.exists(args.config):
-        print(f"错误: 配置文件不存在: {args.config}")
+        print(f"Error: config file not found: {args.config}")
         sys.exit(1)
 
     runner = SimulationRunner(config_path=args.config, wait_for_commands=not args.no_wait)
@@ -739,6 +739,6 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        print("\n程序被中断")
+        print("\nInterrupted")
     finally:
-        print("模拟进程已退出")
+        print("Simulation process exited")
