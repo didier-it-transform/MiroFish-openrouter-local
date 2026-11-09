@@ -89,7 +89,7 @@ def _delete_cloud_graph_if_present(graph_id: str | None) -> None:
                 f"{', '.join(active_simulations)}"
             )
         try:
-            GraphBuilderService(api_key=Config.ZEP_API_KEY).delete_graph(graph_id)
+            GraphBuilderService(api_key=None).delete_graph(graph_id)
         except NotFoundError:
             logger.info("Zep Cloud graph already absent: %s", graph_id)
 
@@ -482,17 +482,6 @@ def _build_graph_impl():
     try:
         logger.info("=== 开始构建图谱 ===")
         
-        # 检查配置
-        errors = []
-        if not Config.ZEP_API_KEY:
-            errors.append(t('api.zepApiKeyMissing'))
-        if errors:
-            logger.error(f"配置错误: {errors}")
-            return jsonify({
-                "success": False,
-                "error": t('api.configError', details="; ".join(errors))
-            }), 500
-        
         # 解析请求
         data = request.get_json() or {}
         project_id = data.get('project_id')
@@ -546,7 +535,7 @@ def _build_graph_impl():
                 and project.zep_batch_id
                 and project.zep_batch_operation_id
             ):
-                builder = GraphBuilderService(api_key=Config.ZEP_API_KEY)
+                builder = GraphBuilderService(api_key=None)
                 batch_summary = builder.get_batch_summary(project.zep_batch_id)
                 if getattr(batch_summary, "status", None) in {
                     "queued",
@@ -660,7 +649,7 @@ def _build_graph_impl():
                 )
                 
                 # 创建图谱构建服务
-                builder = GraphBuilderService(api_key=Config.ZEP_API_KEY)
+                builder = GraphBuilderService(api_key=None)
                 
                 # 分块
                 task_manager.update_task(
@@ -882,13 +871,7 @@ def get_graph_data(graph_id: str):
     获取图谱数据（节点和边）
     """
     try:
-        if not Config.ZEP_API_KEY:
-            return jsonify({
-                "success": False,
-                "error": t('api.zepApiKeyMissing')
-            }), 500
-        
-        builder = GraphBuilderService(api_key=Config.ZEP_API_KEY)
+        builder = GraphBuilderService(api_key=None)
         graph_data = builder.get_graph_data(graph_id)
         
         return jsonify({
@@ -910,12 +893,6 @@ def delete_graph(graph_id: str):
     删除Zep图谱
     """
     try:
-        if not Config.ZEP_API_KEY:
-            return jsonify({
-                "success": False,
-                "error": t('api.zepApiKeyMissing')
-            }), 500
-        
         projects = ProjectManager.find_projects_by_graph_id(graph_id)
         if not projects:
             return jsonify({

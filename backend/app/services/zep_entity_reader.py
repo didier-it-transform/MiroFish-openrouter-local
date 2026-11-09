@@ -78,9 +78,7 @@ class ZepEntityReader:
     """
     
     def __init__(self, api_key: Optional[str] = None):
-        self.api_key = api_key or Config.ZEP_API_KEY
-        if not self.api_key:
-            raise ValueError("ZEP_API_KEY 未配置")
+        self.api_key = api_key or None
         
         self.client = get_zep_client(self.api_key)
     

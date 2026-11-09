@@ -7,7 +7,6 @@ import time
 from functools import lru_cache
 from typing import Any, Callable, TypeVar
 
-import httpx
 from zep_cloud.client import Zep
 from zep_cloud.core.api_error import ApiError as ZepApiError
 
@@ -57,30 +56,14 @@ def normalize_zep_search_limit(limit: Any) -> int:
 def _cached_zep_client(api_key: str, timeout: float) -> Zep:
     return Zep(
         api_key=api_key,
-        base_url=ZEP_CLOUD_BASE_URL,
         timeout=timeout,
     )
 
 
 def get_zep_client(api_key: str | None = None, timeout: float | None = None) -> Zep:
-    """Return a process-shared, explicitly configured Zep Cloud client."""
+    """Return a process-shared local graph-memory client."""
 
-    # zep-cloud gives ZEP_API_URL precedence even when base_url is explicit.
-    # Reject it so this Cloud-only integration cannot silently target a
-    # self-hosted or compatibility endpoint.
-    if os.environ.get("ZEP_API_URL"):
-        raise ValueError("ZEP_API_URL is unsupported; unset it to use Zep Cloud")
-
-    normalized_key = (api_key or Config.ZEP_API_KEY or "").strip()
-    if not normalized_key:
-        raise ValueError("ZEP_API_KEY 未配置")
-
-    request_timeout = float(
-        timeout if timeout is not None else ZEP_HTTP_REQUEST_TIMEOUT_SECONDS
-    )
-    if request_timeout <= 0:
-        raise ValueError("Zep request timeout must be greater than 0")
-    return _cached_zep_client(normalized_key, request_timeout)
+    return _cached_zep_client("local", ZEP_HTTP_REQUEST_TIMEOUT_SECONDS)
 
 
 def clear_zep_client_cache() -> None:
@@ -92,8 +75,6 @@ def clear_zep_client_cache() -> None:
 def is_retryable_zep_error(error: BaseException) -> bool:
     """Return whether a failed *read* is safe and useful to retry."""
 
-    if isinstance(error, (httpx.TimeoutException, httpx.TransportError)):
-        return True
     if isinstance(error, (ConnectionError, TimeoutError, OSError)):
         return True
     if isinstance(error, ZepApiError):

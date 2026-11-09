@@ -1,7 +1,7 @@
 from types import SimpleNamespace
 
 from app.services.zep_entity_reader import ZepEntityReader
-from zep_cloud.graph.node.client import NodeClient
+from zep_cloud.client import _NodeAPI as NodeClient
 
 
 def test_pinned_zep_sdk_exposes_get_edges_not_get_entity_edges():

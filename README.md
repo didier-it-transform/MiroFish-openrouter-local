@@ -115,16 +115,14 @@ cp .env.example .env
 **Required Environment Variables:**
 
 ```env
-# LLM API Configuration (supports any LLM API with OpenAI SDK format)
-# Recommended: Alibaba Qwen-plus model via Bailian Platform: https://bailian.console.aliyun.com/
+# LLM API Configuration (OpenRouter — the only external dependency)
+# Get an API key at: https://openrouter.ai/keys
 # High consumption, try simulations with fewer than 40 rounds first
-LLM_API_KEY=your_api_key
-LLM_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
-LLM_MODEL_NAME=qwen-plus
+LLM_API_KEY=your_openrouter_api_key
+LLM_BASE_URL=https://openrouter.ai/api/v1
+LLM_MODEL_NAME=openai/gpt-4o-mini
 
-# Zep Cloud Configuration
-# Free monthly quota is sufficient for simple usage: https://app.getzep.com/
-ZEP_API_KEY=your_zep_api_key
+# Memory graphs are stored locally in backend/uploads/zep_local/graph.db — no external service required.
 ```
 
 #### 2. Install Dependencies
@@ -190,7 +188,7 @@ The MiroFish team is recruiting full-time/internship positions. If you're intere
 
 **MiroFish has received strategic support and incubation from Shanda Group!**
 
-MiroFish's simulation engine is powered by **[OASIS (Open Agent Social Interaction Simulations)](https://github.com/camel-ai/oasis)**, We sincerely thank the CAMEL-AI team for their open-source contributions!
+MiroFish's original simulation engine was powered by **[OASIS (Open Agent Social Interaction Simulations)](https://github.com/camel-ai/oasis)**, and its memory layer by Zep Cloud. This fork replaced both with a fully self-contained implementation: a built-in simulation loop and a local SQLite-backed graph store, so the only external dependency is the configured LLM provider (OpenRouter). We sincerely thank the CAMEL-AI team for their open-source contributions!
 
 ## 📈 Project Statistics
 

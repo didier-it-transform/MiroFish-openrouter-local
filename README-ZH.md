@@ -116,15 +116,13 @@ cp .env.example .env
 
 ```env
 # LLM API配置（支持 OpenAI SDK 格式的任意 LLM API）
-# 推荐使用阿里百炼平台qwen-plus模型：https://bailian.console.aliyun.com/
+# 获取 API Key：https://openrouter.ai/keys
 # 注意消耗较大，可先进行小于40轮的模拟尝试
-LLM_API_KEY=your_api_key
-LLM_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
-LLM_MODEL_NAME=qwen-plus
+LLM_API_KEY=your_openrouter_api_key
+LLM_BASE_URL=https://openrouter.ai/api/v1
+LLM_MODEL_NAME=openai/gpt-4o-mini
 
-# Zep Cloud 配置
-# 每月免费额度即可支撑简单使用：https://app.getzep.com/
-ZEP_API_KEY=your_zep_api_key
+# 记忆图谱默认本地存储于 backend/uploads/zep_local/graph.db，无需任何外部服务。
 ```
 
 #### 2. 安装依赖
@@ -190,7 +188,7 @@ MiroFish团队长期招募全职/实习，如果你对多Agent应用感兴趣，
 
 **MiroFish 得到了盛大集团的战略支持和孵化！**
 
-MiroFish 的仿真引擎由 **[OASIS](https://github.com/camel-ai/oasis)** 驱动，我们衷心感谢 CAMEL-AI 团队的开源贡献！
+MiroFish 原仿真引擎由 **[OASIS](https://github.com/camel-ai/oasis)** 驱动，记忆层原使用 Zep Cloud。本仓库已将两者替换为完全自包含的实现：内置模拟循环 + 本地 SQLite 图谱存储，唯一的外部依赖是所配置的 LLM 服务（OpenRouter）。我们衷心感谢 CAMEL-AI 团队的开源贡献！
 
 ## 📈 项目统计
 
